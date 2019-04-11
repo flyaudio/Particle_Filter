@@ -15,8 +15,8 @@ def main(window_width, window_height, num_particles, sensor_limit_ratio, grid_he
 
     world = Maze(grid_height = grid_height, grid_width = grid_width, num_rows = num_rows, num_cols = num_cols, wall_prob = wall_prob, random_seed = random_seed)
 
-    x = np.random.uniform(0, world.width)
-    y = np.random.uniform(0, world.height)
+    x = np.random.uniform(0, world.width) # generate 0~width之间的随机数
+    y = np.random.uniform(0, world.height) # generate 0~height之间的随机数
     bob = Robot(x = x, y = y, maze = world, speed = robot_speed, sensor_limit = sensor_limit)
 
     particles = list()
@@ -25,7 +25,7 @@ def main(window_width, window_height, num_particles, sensor_limit_ratio, grid_he
         y = np.random.uniform(0, world.height)
         particles.append(Particle(x = x, y = y, maze = world, sensor_limit = sensor_limit))
 
-    time.sleep(1)
+    time.sleep(1) # sleep 1 second
     world.show_maze()
     
     while True:
@@ -35,6 +35,7 @@ def main(window_width, window_height, num_particles, sensor_limit_ratio, grid_he
         particle_weight_total = 0
         for particle in particles:
             readings_particle = particle.read_sensor(maze = world)
+            # 更新每个particle的weight
             particle.weight = weight_gaussian_kernel(x1 = readings_robot, x2 = readings_particle, std = kernel_sigma)
             particle_weight_total += particle.weight
 

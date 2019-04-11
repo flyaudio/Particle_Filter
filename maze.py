@@ -297,7 +297,7 @@ class Particle(object):
             self.y = self.add_noise(x = self.y, std = std)
             self.heading = self.add_noise(x = self.heading, std = 360 * 0.05)
 
-        self.fix_invalid_particles()
+        self.fix_invalid_particles() #添加噪声之后,需要调整超出边界的particle的坐标
 
 
     def fix_invalid_particles(self):
@@ -317,7 +317,7 @@ class Particle(object):
         if self.heading < 0:
             self.heading += 360
         '''
-        self.heading = self.heading % 360
+        self.heading = self.heading % 360 #求余数,求模
 
     @property
     def state(self):
@@ -325,8 +325,8 @@ class Particle(object):
         return (self.x, self.y, self.heading)
 
     def add_noise(self, x, std):
-
-        return x + np.random.normal(0, std)
+                                #均值, 标准差
+        return x + np.random.normal(0, std) # normal distribution正态分布
 
     def read_sensor(self, maze):
 
@@ -334,7 +334,7 @@ class Particle(object):
 
         heading = self.heading % 360
 
-        # Remove the compass from particle
+        # Remove the compass from particle不明白????????
         if heading >= 45 and heading < 135:
             readings = readings
         elif heading >= 135 and heading < 225:
@@ -357,7 +357,7 @@ class Particle(object):
     def try_move(self, speed, maze, noisy = False):
 
         heading = self.heading
-        heading_rad = np.radians(heading)
+        heading_rad = np.radians(heading) #Convert angles from degrees to radians
 
         dx = np.sin(heading_rad) * speed
         dy = np.cos(heading_rad) * speed
@@ -418,7 +418,7 @@ class Particle(object):
             raise Exception('Unexpected collision detection.')
 
 
-class Robot(Particle):
+class Robot(Particle): # 继承类
 
     def __init__(self, x, y, maze, heading = None, speed = 1.0, sensor_limit = None, noisy = True):
 
@@ -446,7 +446,7 @@ class Robot(Particle):
 
         # Robot has error in reading the sensor while particles do not.
 
-        readings = super(Robot, self).read_sensor(maze = maze)
+        readings = super(Robot, self).read_sensor(maze = maze) #super() 函数是用于调用父类(超类)的一个方法
         if self.noisy == True:
             readings = self.add_sensor_noise(x = readings)
 
@@ -475,14 +475,14 @@ class WeightedDistribution(object):
     def random_select(self):
 
         try:
-            return self.particles[bisect.bisect_left(self.distribution, np.random.uniform(0, 1))]
+            return self.particles[bisect.bisect_left(self.distribution, np.random.uniform(0, 1))]# bisect_left返回将会插入数组的位置序号
         except IndexError:
             # When all particles have weights zero
             return None
 
 def euclidean_distance(x1, x2):
 
-    return np.linalg.norm(np.asarray(x1) - np.asarray(x2))
+    return np.linalg.norm(np.asarray(x1) - np.asarray(x2))#二范数,两点间的距离
 
 def weight_gaussian_kernel(x1, x2, std = 10):
 
